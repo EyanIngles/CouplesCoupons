@@ -1,14 +1,14 @@
 //
-//  CouplesCouponsApp.swift
-//  CouplesCoupons
+//  Ingles_appApp.swift
+//  Ingles_app
 //
-//  Created by Eyan Ingles on 31/8/2026.
+//  Created by Eyan Ingles on 28/8/2026.
 //
 
 import SwiftUI
 
 @main
-struct CouplesCouponsApp: App {
+struct CouplesCoupons: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

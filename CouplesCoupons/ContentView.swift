@@ -8,16 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var isAuthenticated = false
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if isAuthenticated {
+                HomeView()
+            } else {
+                LoginView(isAuthenticated: $isAuthenticated)
+            }
         }
-        .padding()
     }
 }
+
+// Placeholder for shared resources or state if you need them later.
+//class ContentViewData: ObservableObject {} //TODO
 
 #Preview {
     ContentView()
