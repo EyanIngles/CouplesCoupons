@@ -4,7 +4,8 @@
 //
 //  Created by Eyan Ingles on 28/8/2026.
 //
-struct Constants {
-    static var base_URL = "https://pi.tailcb4684.ts.net:3001" // create a new server on port 3001 as ticketing service is using port 3000.
-    static var test_URL = "https://macbook-pro.tailcb4684.ts.net:3001"
+import Foundation
+
+nonisolated enum Constants {
+    static let apiBaseURL = URL(string: "http://127.0.0.1:3001")!
 }

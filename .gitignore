@@ -23,3 +23,8 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Local planning (do not push)
+.nexus/
+v1_plan_tracker.md
+*plan_tracker.md
