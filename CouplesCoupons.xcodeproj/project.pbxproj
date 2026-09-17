@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		846A000030600000001054C9 /* Exceptions for "CouplesCoupons" folder in "CouplesCoupons" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 84E53D4B30459BA4001054C9 /* CouplesCoupons */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileReference section */
 		84E53D4C30459BA4001054C9 /* CouplesCoupons.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CouplesCoupons.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -13,6 +23,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		84E53D4E30459BA4001054C9 /* CouplesCoupons */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				846A000030600000001054C9 /* Exceptions for "CouplesCoupons" folder in "CouplesCoupons" target */,
+			);
 			path = CouplesCoupons;
 			sourceTree = "<group>";
 		};
@@ -256,6 +269,7 @@
 				DEVELOPMENT_TEAM = JJYS2XRL8Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CouplesCoupons/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -288,6 +302,7 @@
 				DEVELOPMENT_TEAM = JJYS2XRL8Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CouplesCoupons/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

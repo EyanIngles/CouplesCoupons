@@ -11,21 +11,37 @@ import Foundation
 import Security
 
 enum KeychainHelper {
-    static func save(token: String) {
+    private static let service = "CouplesCoupons.auth"
+    private static let account = "authToken"
+
+    static func save(token: String) throws {
         let data = Data(token.utf8)
-        let query: [String: Any] = [
+        let lookupQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "authToken",
-            kSecValueData as String: data
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account
         ]
-        SecItemDelete(query as CFDictionary)
-        SecItemAdd(query as CFDictionary, nil)
+        let deleteStatus = SecItemDelete(lookupQuery as CFDictionary)
+        guard deleteStatus == errSecSuccess || deleteStatus == errSecItemNotFound else {
+            throw KeychainError.unexpectedStatus(deleteStatus)
+        }
+
+        var addQuery = lookupQuery
+        addQuery.merge([
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+            kSecValueData as String: data
+        ]) { _, new in new }
+        let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
+        guard addStatus == errSecSuccess else {
+            throw KeychainError.unexpectedStatus(addStatus)
+        }
     }
 
     static func loadToken() -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "authToken",
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
@@ -35,11 +51,26 @@ enum KeychainHelper {
         return String(data: data, encoding: .utf8)
     }
 
-    static func deleteToken() {
+    static func deleteToken() throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "authToken"
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account
         ]
-        SecItemDelete(query as CFDictionary)
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw KeychainError.unexpectedStatus(status)
+        }
+    }
+}
+
+enum KeychainError: LocalizedError {
+    case unexpectedStatus(OSStatus)
+
+    var errorDescription: String? {
+        switch self {
+        case .unexpectedStatus(let status):
+            "The secure session store failed (OSStatus \(status))."
+        }
     }
 }

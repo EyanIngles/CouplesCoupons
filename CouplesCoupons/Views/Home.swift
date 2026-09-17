@@ -54,13 +54,16 @@ struct HomeView: View {
                             }
                             Spacer()
                             
-                            Circle()
-                                .fill(softPink.opacity(0.4))
-                                .frame(width: 44, height: 44)
-                                .overlay(
-                                    Image(systemName: "heart.fill")
-                                        .foregroundStyle(pink)
-                                )
+                            NavigationLink(destination: AccountView()) {
+                                Circle()
+                                    .fill(softPink.opacity(0.4))
+                                    .frame(width: 44, height: 44)
+                                    .overlay(
+                                        Image(systemName: "person.crop.circle.fill")
+                                            .foregroundStyle(pink)
+                                    )
+                            }
+                            .accessibilityLabel("Account")
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 12)
@@ -314,4 +317,5 @@ struct NewsItem: Identifiable {
 
 #Preview {
     HomeView()
+        .environmentObject(AuthManager())
 }

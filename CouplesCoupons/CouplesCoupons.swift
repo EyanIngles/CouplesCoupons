@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct CouplesCoupons: App {
+    @StateObject private var authManager = AuthManager()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(authManager)
         }
     }
 }
