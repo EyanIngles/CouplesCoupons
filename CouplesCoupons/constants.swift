@@ -7,5 +7,6 @@
 import Foundation
 
 nonisolated enum Constants {
-    static let apiBaseURL = URL(string: "http://127.0.0.1:3001")!
+    /// Always-on Pi over Tailscale. Both TestFlight phones must be on the same tailnet.
+    static let apiBaseURL = URL(string: "http://pi.tailcb4684.ts.net:3001")!
 }
