@@ -49,7 +49,7 @@ final class AuthManager: ObservableObject {
 
         await apiClient.setToken(token)
         do {
-            currentUser = try await apiClient.me()
+            currentUser = try await apiClient.currentUser()
             await resolveCouple()
         } catch let error as APIError where error.statusCode == 401 {
             await invalidateSession()

@@ -41,15 +41,19 @@ struct WaitingPairingView: View {
                 }
                 .buttonStyle(WarmPrimaryButtonStyle())
 
-                HStack(spacing: 24) {
-                    Button("Leave Couple", role: .destructive) {
-                        confirmingLeave = true
-                    }
-                    Button("Log Out") {
-                        Task { await authManager.logout() }
-                    }
-                    .foregroundStyle(WarmPalette.pink)
+                Button("Log Out") {
+                    Task { await authManager.logout() }
                 }
+                .foregroundStyle(WarmPalette.pink)
+                .disabled(authManager.isWorking)
+
+                Button("Leave Couple", role: .destructive) {
+                    confirmingLeave = true
+                }
+                .buttonStyle(.plain)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .disabled(authManager.isWorking)
             }
             .padding(32)
         }
@@ -61,7 +65,7 @@ struct WaitingPairingView: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("The invite will stop working and this couple will be dissolved.")
+            Text("This dissolves the couple for both people and cannot be undone. If coupons exist, both coupon banks will be cleared. Points stay on each account.")
         }
     }
 }

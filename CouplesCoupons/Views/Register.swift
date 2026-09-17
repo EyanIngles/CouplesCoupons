@@ -39,10 +39,15 @@ struct RegisterView: View {
                             .warmField()
 
                         if let message = validationMessage ?? authManager.errorMessage {
-                            Text(message)
-                                .font(.caption)
+                            Label(message, systemImage: "exclamationmark.triangle.fill")
+                                .font(.callout.weight(.medium))
                                 .foregroundStyle(WarmPalette.pink)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(12)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(WarmPalette.pink.opacity(0.1))
+                                )
                         }
 
                         Button {

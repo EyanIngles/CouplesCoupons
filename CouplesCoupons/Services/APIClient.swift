@@ -34,8 +34,8 @@ actor APIClient {
         return try await request(path: "auth/login", method: "POST", body: encode(body), authorized: false)
     }
 
-    func me() async throws -> User {
-        try await request(path: "auth/me", method: "GET")
+    func currentUser() async throws -> User {
+        try await request(path: "auth/current_user", method: "GET")
     }
 
     func createCouple() async throws -> Couple {
@@ -48,7 +48,7 @@ actor APIClient {
     }
 
     func currentCouple() async throws -> Couple {
-        try await request(path: "couples/me", method: "GET")
+        try await request(path: "couples/current", method: "GET")
     }
 
     func leaveCouple() async throws -> LeaveCoupleResponse {
@@ -65,6 +65,8 @@ actor APIClient {
         }
     }
 
+    // Defaults to sending the Keychain-backed JWT as Authorization: Bearer;
+    // only register and login pass false.
     private func request<T: Decodable & Sendable>(
         path: String,
         method: String,
