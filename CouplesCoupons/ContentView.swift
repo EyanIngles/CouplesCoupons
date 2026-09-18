@@ -28,6 +28,7 @@ struct ContentView: View {
                 restoreFailureView(message: message)
             }
         }
+        .preferredColorScheme(.light)
         .task {
             await authManager.restoreSession()
         }
