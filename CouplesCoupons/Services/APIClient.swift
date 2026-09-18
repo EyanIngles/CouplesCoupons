@@ -73,6 +73,41 @@ actor APIClient {
         try await request(path: "coupons/\(id.uuidString.lowercased())/use", method: "POST")
     }
 
+
+    func listOffers(couponId: UUID) async throws -> [NegotiationOffer] {
+        try await request(path: "coupons/\(couponId.uuidString.lowercased())/offers", method: "GET")
+    }
+
+    func createOffer(couponId: UUID, whenText: String, rewardText: String, notes: String) async throws -> NegotiationOffer {
+        let body = OfferRequest(whenText: whenText, rewardText: rewardText, notes: notes)
+        return try await request(
+            path: "coupons/\(couponId.uuidString.lowercased())/offers",
+            method: "POST",
+            body: encode(body)
+        )
+    }
+
+    func offerInbox() async throws -> [NegotiationOffer] {
+        try await request(path: "offers/inbox", method: "GET")
+    }
+
+    func acceptOffer(id: UUID) async throws -> NegotiationOffer {
+        try await request(path: "offers/\(id.uuidString.lowercased())/accept", method: "POST")
+    }
+
+    func declineOffer(id: UUID) async throws -> NegotiationOffer {
+        try await request(path: "offers/\(id.uuidString.lowercased())/decline", method: "POST")
+    }
+
+    func counterOffer(id: UUID, whenText: String, rewardText: String, notes: String) async throws -> NegotiationOffer {
+        let body = OfferRequest(whenText: whenText, rewardText: rewardText, notes: notes)
+        return try await request(
+            path: "offers/\(id.uuidString.lowercased())/counter",
+            method: "POST",
+            body: encode(body)
+        )
+    }
+
     private func encode<T: Encodable>(_ value: T) throws -> Data {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
