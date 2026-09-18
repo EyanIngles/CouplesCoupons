@@ -4,13 +4,28 @@ struct AccountView: View {
     @EnvironmentObject private var authManager: AuthManager
     @State private var confirmingLeave = false
 
+    private var partner: CoupleMember? {
+        guard let me = authManager.currentUser?.id else { return nil }
+        return authManager.currentCouple?.members.first { $0.id != me }
+    }
+
     var body: some View {
         ZStack {
             WarmPalette.cream.ignoresSafeArea()
             Form {
-                Section("Account") {
+                Section("You") {
                     LabeledContent("Name", value: authManager.currentUser?.displayName ?? "—")
                     LabeledContent("Email", value: authManager.currentUser?.email ?? "—")
+                }
+
+                Section("Partner") {
+                    if let partner {
+                        LabeledContent("Name", value: partner.displayName)
+                        LabeledContent("Email", value: partner.email)
+                    } else {
+                        Text("Not linked yet. They need to join with your invite code — creating their own couple will not connect you.")
+                            .foregroundStyle(WarmPalette.pink)
+                    }
                 }
 
                 if let error = authManager.errorMessage {
