@@ -55,6 +55,24 @@ actor APIClient {
         try await request(path: "couples/leave", method: "POST")
     }
 
+    func listCoupons() async throws -> [Coupon] {
+        try await request(path: "coupons", method: "GET")
+    }
+
+    func createCoupon(title: String, description: String, category: String, usesTotal: Int) async throws -> Coupon {
+        let body = CreateCouponRequest(
+            title: title,
+            description: description,
+            category: category,
+            usesTotal: usesTotal
+        )
+        return try await request(path: "coupons", method: "POST", body: encode(body))
+    }
+
+    func useCoupon(id: UUID) async throws -> Coupon {
+        try await request(path: "coupons/\(id.uuidString.lowercased())/use", method: "POST")
+    }
+
     private func encode<T: Encodable>(_ value: T) throws -> Data {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase

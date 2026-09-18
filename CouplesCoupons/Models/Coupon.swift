@@ -1,55 +1,39 @@
-//
-//  Coupon.swift
-//  Ingles_app
-//
-//  Created by Eyan Ingles on 28/8/2026.
-//
-
-// Models/Coupon.swift
 import Foundation
 
-struct Coupon: Identifiable, Codable, Equatable {
-    let id: Int
-    var title: String
-    var description: String
-    var value: String                 // e.g. "Free coffee", "$10 off", "1 free movie night"
-    let redeemableCoupons: Int       // how many coupons this person can redeem.
-    var type: CouponType
-    var upgradeStatus: UpgradeCoupon
-    let couponStatus: CouponStatus
-    let createdBy: String             // userId or name.
-    var redeemedBy: String?           //optional name
-    let createdAt: Date
-    var expiresAt: Date?
-    let upgradable: Bool
-
-    enum CouponType: String, Codable, CaseIterable {
-        case Massage, Date, Food, Beauty
-    }
-
-    enum CouponStatus: String, Codable {
-        case active, redeemed, expired, cancelled, upgraded
-    }
-}
-
-struct UpgradeCoupon: Identifiable, Codable, Equatable {
-    let id: Int
-    let standardCouponsAvailable: Int
-    let upgradeRequestsCurrent: Int
-    let upgradeCouponAvailable: Int
-    let currentUpgraded: Bool
-    let usedUpgraded: Int
-    let usedStandard: Int
-}
-
-struct Negiotate: Identifiable, Codable, Equatable {
-    let id: Int
+nonisolated struct Coupon: Identifiable, Codable, Equatable, Sendable {
+    let id: UUID
+    let coupleId: UUID
+    let createdBy: UUID
+    let assignedTo: UUID
+    let title: String
     let description: String
-    let negotiatedAccepted: Bool
+    let category: String
+    let usesTotal: Int
+    let usesRemaining: Int
+    let status: String
+    let createdAt: String
+
+    var categoryLabel: String { category.capitalized }
 }
 
-struct BuyablePoints: Identifiable, Codable, Equatable {
-    let id: Int
+nonisolated struct CreateCouponRequest: Encodable, Sendable {
+    let title: String
     let description: String
-    
+    let category: String
+    let usesTotal: Int
+}
+
+enum CouponCategory: String, CaseIterable, Identifiable {
+    case massage, date, food, beauty, custom
+    var id: String { rawValue }
+    var title: String { rawValue.capitalized }
+    var systemImage: String {
+        switch self {
+        case .massage: "hands.sparkles.fill"
+        case .date: "heart.fill"
+        case .food: "fork.knife"
+        case .beauty: "sparkles"
+        case .custom: "pencil"
+        }
+    }
 }

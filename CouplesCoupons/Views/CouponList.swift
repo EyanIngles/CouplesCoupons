@@ -1,62 +1,41 @@
-//
-//  CouponList.swift
-//  Ingles_app
-//
-//  Created by Eyan Ingles on 28/8/2026.
-//
-
 import SwiftUI
 
 struct CouponList: View {
-
-    // Same colours as Login
-    private let pink = Color(red: 0.89, green: 0.27, blue: 0.45)
-    private let softPink = Color(red: 0.96, green: 0.75, blue: 0.80)
-    private let cream = Color(red: 0.98, green: 0.95, blue: 0.90)
-
-    private let coupons = MockData.coupons
-
-    private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
+    @State private var coupons: [Coupon] = []
+    @State private var errorMessage: String?
+    @State private var isLoading = false
+    @State private var showingCompose = false
 
     var body: some View {
         ZStack {
-            cream.ignoresSafeArea()
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Our Coupons")
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(pink)
-
-                        Text("Little treats just for us")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
-
-                    LazyVGrid(columns: columns, spacing: 16) {
+            WarmPalette.cream.ignoresSafeArea()
+            if isLoading && coupons.isEmpty {
+                ProgressView().tint(WarmPalette.pink)
+            } else if coupons.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "ticket")
+                        .font(.system(size: 44))
+                        .foregroundStyle(WarmPalette.pink)
+                    Text("Your bank is empty")
+                        .font(.headline)
+                        .foregroundStyle(WarmPalette.pink)
+                    Text("Ask your partner to send you a coupon, or send them one with +")
+                        .font(.subheadline)
+                        .foregroundStyle(WarmPalette.pink.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                }
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
                         ForEach(coupons) { coupon in
-                            NavigationLink(destination: CouponDetail(coupon: coupon)) {
-                                CouponCard(
-                                    title: coupon.title,
-                                    value: coupon.value,
-                                    type: coupon.type.rawValue,
-                                    status: coupon.couponStatus.rawValue,
-                                    pink: pink,
-                                    softPink: softPink
-                                )
+                            NavigationLink(destination: CouponDetail(coupon: coupon, onChange: { await load() })) {
+                                CouponCard(coupon: coupon)
                             }
                             .buttonStyle(.plain)
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 30)
+                    .padding(20)
                 }
             }
         }
@@ -65,58 +44,70 @@ struct CouponList: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    // future: create new coupon
+                    showingCompose = true
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.title2)
-                        .foregroundStyle(pink)
+                        .foregroundStyle(WarmPalette.pink)
                 }
             }
+        }
+        .sheet(isPresented: $showingCompose, onDismiss: { Task { await load() } }) {
+            NavigationStack { ComposeCouponView() }
+        }
+        .task { await load() }
+        .overlay(alignment: .bottom) {
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundStyle(.white)
+                    .padding()
+                    .background(WarmPalette.pink)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding()
+            }
+        }
+    }
+
+    @MainActor
+    private func load() async {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+        do {
+            coupons = try await APIClient.shared.listCoupons()
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 }
 
 struct CouponCard: View {
-    let title: String
-    let value: String
-    let type: String
-    let status: String
-    let pink: Color
-    let softPink: Color
+    let coupon: Coupon
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.white)
-                .shadow(color: pink.opacity(0.08), radius: 12, y: 6)
-                .frame(height: 160)
-
-            VStack(spacing: 10) {
-                Image(systemName: type == "Massage" ? "hands.sparkles.fill" : type == "Date" ? "heart.fill" : type == "Food" ? "fork.knife" : "sparkles")
-                    .font(.title3)
-                    .foregroundStyle(pink)
-
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-
-                Text(value)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                Text(status.capitalized)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(pink.opacity(0.8))
-            }
-            .padding(16)
+        VStack(alignment: .leading, spacing: 10) {
+            Image(systemName: CouponCategory(rawValue: coupon.category)?.systemImage ?? "ticket.fill")
+                .font(.title2)
+                .foregroundStyle(WarmPalette.pink)
+            Text(coupon.title)
+                .font(.headline)
+                .foregroundStyle(WarmPalette.pink)
+                .lineLimit(2)
+            Text(coupon.categoryLabel)
+                .font(.caption)
+                .foregroundStyle(WarmPalette.pink.opacity(0.7))
+            Text("\(coupon.usesRemaining)/\(coupon.usesTotal) uses")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(WarmPalette.pink)
         }
+        .padding(14)
+        .frame(maxWidth: .infinity, minHeight: 140, alignment: .topLeading)
+        .background(RoundedRectangle(cornerRadius: 18).fill(.white))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(WarmPalette.softPink, lineWidth: 1.2))
     }
 }
 
 #Preview {
-    NavigationStack {
-        CouponList()
-    }
+    NavigationStack { CouponList() }
 }
