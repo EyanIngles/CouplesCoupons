@@ -109,6 +109,35 @@ struct HomeView: View {
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, 20)
+
+                        NavigationLink(destination: OfferInboxView()) {
+                            HStack(spacing: 16) {
+                                ZStack {
+                                    Circle()
+                                        .fill(softPink.opacity(0.45))
+                                        .frame(width: 52, height: 52)
+                                    Image(systemName: "bubble.left.and.bubble.right.fill")
+                                        .font(.title3)
+                                        .foregroundStyle(pink)
+                                }
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text("Pending offers")
+                                        .font(.headline)
+                                        .foregroundStyle(pink)
+                                    Text("Accept, decline, or counter")
+                                        .font(.caption)
+                                        .foregroundStyle(pink.opacity(0.7))
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(pink.opacity(0.7))
+                            }
+                            .padding(16)
+                            .background(RoundedRectangle(cornerRadius: 20).fill(.white))
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(softPink.opacity(0.6), lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 20)
                         
                         // MARK: - Question of the Day
                         VStack(alignment: .leading, spacing: 14) {

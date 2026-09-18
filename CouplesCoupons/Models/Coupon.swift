@@ -37,3 +37,22 @@ enum CouponCategory: String, CaseIterable, Identifiable {
         }
     }
 }
+
+nonisolated struct NegotiationOffer: Identifiable, Codable, Equatable, Sendable {
+    let id: UUID
+    let couponId: UUID
+    let couponTitle: String
+    let proposedBy: UUID
+    let proposedByName: String
+    let whenText: String
+    let rewardText: String
+    let notes: String
+    let status: String
+    let createdAt: String
+}
+
+nonisolated struct OfferRequest: Encodable, Sendable {
+    let whenText: String
+    let rewardText: String
+    let notes: String
+}
