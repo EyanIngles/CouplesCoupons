@@ -38,6 +38,10 @@ actor APIClient {
         try await request(path: "auth/current_user", method: "GET")
     }
 
+    func fetchVersion() async throws -> VersionResponse {
+        try await request(path: "version", method: "GET", authorized: false)
+    }
+
     func createCouple() async throws -> Couple {
         try await request(path: "couples", method: "POST")
     }

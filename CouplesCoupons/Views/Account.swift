@@ -3,6 +3,7 @@ import SwiftUI
 struct AccountView: View {
     @EnvironmentObject private var authManager: AuthManager
     @State private var confirmingLeave = false
+    @State private var serverVersion = "—"
 
     private var partner: CoupleMember? {
         guard let me = authManager.currentUser?.id else { return nil }
@@ -51,7 +52,17 @@ struct AccountView: View {
         }
         .navigationTitle("Account")
         .tint(WarmPalette.pink)
-        .onAppear { authManager.clearError() }
+        .safeAreaInset(edge: .bottom, alignment: .leading) {
+            Text("App \(AppVersion.current)  ·  Server \(serverVersion)")
+                .font(.caption2)
+                .foregroundStyle(WarmPalette.pink.opacity(0.7))
+                .padding(.horizontal, 20)
+                .padding(.bottom, 8)
+        }
+        .onAppear {
+            authManager.clearError()
+            Task { await loadServerVersion() }
+        }
         .confirmationDialog("Leave this couple?", isPresented: $confirmingLeave, titleVisibility: .visible) {
             Button("Leave Couple", role: .destructive) {
                 Task { await authManager.leaveCouple() }
@@ -59,6 +70,15 @@ struct AccountView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This dissolves the couple for both people and cannot be undone. If coupons exist, both coupon banks will be cleared. Points stay on each account.")
+        }
+    }
+
+    @MainActor
+    private func loadServerVersion() async {
+        do {
+            serverVersion = try await APIClient.shared.fetchVersion().api
+        } catch {
+            serverVersion = "—"
         }
     }
 }
