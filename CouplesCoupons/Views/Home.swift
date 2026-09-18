@@ -138,6 +138,8 @@ struct HomeView: View {
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, 20)
+
+                        FeelingsCard()
                         
                         // MARK: - Question of the Day
                         VStack(alignment: .leading, spacing: 14) {

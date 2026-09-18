@@ -95,6 +95,36 @@ nonisolated enum AppVersion {
     }
 }
 
+nonisolated struct Feeling: Identifiable, Codable, Equatable, Sendable {
+    let id: UUID
+    let authorId: UUID
+    let authorName: String
+    let preset: String
+    let note: String
+    let day: String
+    let createdAt: String
+}
+
+nonisolated struct FeelingRequest: Encodable, Sendable {
+    let preset: String
+    let note: String
+}
+
+enum FeelingPreset: String, CaseIterable, Identifiable {
+    case grateful, missing_you, low_energy, sad, loved, thinking_of_you
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .grateful: "Grateful"
+        case .missing_you: "Missing you"
+        case .low_energy: "Low energy"
+        case .sad: "Sad"
+        case .loved: "Loved"
+        case .thinking_of_you: "Thinking of you"
+        }
+    }
+}
+
 nonisolated enum Changelog {
     static let entries: [ChangelogEntry] = [
         ChangelogEntry(version: "0.0.1", notes: [
@@ -109,6 +139,9 @@ nonisolated enum Changelog {
             "Negotiate a coupon use (offer, counter, accept)",
             "Partner name and email on Account",
             "App and server version on Account",
+        ]),
+        ChangelogEntry(version: "0.0.4", notes: [
+            "Daily feelings: tell your partner how you are today",
         ]),
     ]
 

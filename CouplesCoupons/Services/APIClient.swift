@@ -42,6 +42,15 @@ actor APIClient {
         try await request(path: "version", method: "GET", authorized: false)
     }
 
+    func listFeelings() async throws -> [Feeling] {
+        try await request(path: "feelings", method: "GET")
+    }
+
+    func upsertFeeling(preset: String, note: String) async throws -> Feeling {
+        let body = FeelingRequest(preset: preset, note: note)
+        return try await request(path: "feelings", method: "POST", body: encode(body))
+    }
+
     func createCouple() async throws -> Couple {
         try await request(path: "couples", method: "POST")
     }
