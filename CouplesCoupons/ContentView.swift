@@ -33,7 +33,7 @@ struct ContentView: View {
             await authManager.restoreSession()
             await checkVersion()
         }
-        .onChange(of: scenePhase) { _, newPhase in
+        .onChange(of: scenePhase) { newPhase in
             guard newPhase == .active else { return }
             Task {
                 await authManager.reconcileCouple()
