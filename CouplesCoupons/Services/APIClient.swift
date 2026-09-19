@@ -34,6 +34,19 @@ actor APIClient {
         return try await request(path: "auth/login", method: "POST", body: encode(body), authorized: false)
     }
 
+    func loginWithApple(identityToken: String, displayName: String?) async throws -> AuthResponse {
+        struct Body: Encodable {
+            let identityToken: String
+            let displayName: String?
+        }
+        return try await request(
+            path: "auth/apple",
+            method: "POST",
+            body: encode(Body(identityToken: identityToken, displayName: displayName)),
+            authorized: false
+        )
+    }
+
     func currentUser() async throws -> User {
         try await request(path: "auth/current_user", method: "GET")
     }

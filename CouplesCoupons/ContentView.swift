@@ -40,6 +40,9 @@ struct ContentView: View {
                 await checkVersion()
             }
         }
+        .onChange(of: authManager.phase) {
+            presentWhatsNewIfNeeded()
+        }
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView(entries: whatsNew) {
                 AppVersion.lastSeen = AppVersion.current
@@ -112,14 +115,18 @@ struct ContentView: View {
             let remote = try await APIClient.shared.fetchVersion()
             forceUpdate = AppVersion.isOlder(AppVersion.current, than: remote.minApp)
             guard !forceUpdate else { return }
-            let notes = Changelog.notes(after: AppVersion.lastSeen, upTo: AppVersion.current)
-            if !notes.isEmpty {
-                whatsNew = notes
-                showWhatsNew = true
-            }
+            presentWhatsNewIfNeeded()
         } catch {
             forceUpdate = false
         }
+    }
+
+    private func presentWhatsNewIfNeeded() {
+        guard case .active = authManager.phase else { return }
+        let notes = Changelog.notes(after: AppVersion.lastSeen, upTo: AppVersion.current)
+        guard !notes.isEmpty else { return }
+        whatsNew = notes
+        showWhatsNew = true
     }
 }
 

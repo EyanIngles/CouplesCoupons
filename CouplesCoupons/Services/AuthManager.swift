@@ -71,6 +71,12 @@ final class AuthManager: ObservableObject {
         }
     }
 
+    func loginWithApple(identityToken: String, displayName: String?) async {
+        await authenticate {
+            try await self.apiClient.loginWithApple(identityToken: identityToken, displayName: displayName)
+        }
+    }
+
     func createCouple() async {
         await performPairingRequest {
             try await self.apiClient.createCouple()
