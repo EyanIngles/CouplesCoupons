@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var authManager: AuthManager
+    @EnvironmentObject private var notificationRouter: NotificationRouter
     @Environment(\.scenePhase) private var scenePhase
     @State private var forceUpdate = false
     @State private var whatsNew: [ChangelogEntry] = []
@@ -49,6 +50,26 @@ struct ContentView: View {
                 showWhatsNew = false
             }
         }
+        .alert(item: promptBinding) { prompt in
+            Alert(
+                title: Text(prompt.title),
+                message: Text(prompt.message),
+                primaryButton: .default(Text("See it")) {
+                    notificationRouter.queueDestination(prompt.destination)
+                },
+                secondaryButton: .cancel(Text("Not now"))
+            )
+        }
+    }
+
+    private var promptBinding: Binding<NotificationPrompt?> {
+        Binding(
+            get: {
+                guard case .active = authManager.phase else { return nil }
+                return notificationRouter.pendingPrompt
+            },
+            set: { notificationRouter.pendingPrompt = $0 }
+        )
     }
 
     private var loadingView: some View {
@@ -159,4 +180,5 @@ struct WhatsNewView: View {
 #Preview {
     ContentView()
         .environmentObject(AuthManager())
+        .environmentObject(NotificationRouter.shared)
 }

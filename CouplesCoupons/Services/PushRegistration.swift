@@ -42,6 +42,22 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
-        [.banner, .sound, .badge]
+        guard let payload = PushNotificationPayload(userInfo: notification.request.content.userInfo) else {
+            return [.banner, .sound, .badge]
+        }
+
+        NotificationRouter.shared.queuePrompt(for: payload)
+        return [.sound, .badge]
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        guard let payload = PushNotificationPayload(userInfo: response.notification.request.content.userInfo) else {
+            return
+        }
+
+        NotificationRouter.shared.queueDestination(for: payload)
     }
 }
