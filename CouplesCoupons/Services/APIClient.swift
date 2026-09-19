@@ -42,6 +42,16 @@ actor APIClient {
         try await request(path: "version", method: "GET", authorized: false)
     }
 
+    func registerDevice(token: String, environment: String) async throws {
+        struct Body: Encodable { let token: String; let environment: String }
+        struct Ok: Decodable { let ok: Bool }
+        let _: Ok = try await request(
+            path: "devices",
+            method: "POST",
+            body: encode(Body(token: token, environment: environment))
+        )
+    }
+
     func listFeelings() async throws -> [Feeling] {
         try await request(path: "feelings", method: "GET")
     }

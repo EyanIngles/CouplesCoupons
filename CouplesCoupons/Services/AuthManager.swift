@@ -51,6 +51,7 @@ final class AuthManager: ObservableObject {
         do {
             currentUser = try await apiClient.currentUser()
             await resolveCouple()
+            PushRegistration.requestAfterLogin()
         } catch let error as APIError where error.statusCode == 401 {
             await invalidateSession()
         } catch {
@@ -182,6 +183,7 @@ final class AuthManager: ObservableObject {
             await apiClient.setToken(response.token)
             currentUser = response.user
             await resolveCouple()
+            PushRegistration.requestAfterLogin()
         } catch {
             errorMessage = message(for: error)
         }
