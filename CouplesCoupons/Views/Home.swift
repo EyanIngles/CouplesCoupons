@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+private enum HomeDestination: Hashable {
+    case couponBank
+    case offerInbox
+}
+
 struct HomeView: View {
     @EnvironmentObject private var notificationRouter: NotificationRouter
     @State private var navigationPath = NavigationPath()
@@ -280,14 +285,12 @@ struct HomeView: View {
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
-            .navigationDestination(for: NotificationDestination.self) { destination in
+            .navigationDestination(for: HomeDestination.self) { destination in
                 switch destination {
                 case .couponBank:
                     CouponList()
                 case .offerInbox:
                     OfferInboxView()
-                case .feelings:
-                    EmptyView()
                 }
             }
         }
@@ -302,8 +305,10 @@ struct HomeView: View {
 
         navigationPath = NavigationPath()
         switch destination {
-        case .couponBank, .offerInbox:
-            navigationPath.append(destination)
+        case .couponBank:
+            navigationPath.append(HomeDestination.couponBank)
+        case .offerInbox:
+            navigationPath.append(HomeDestination.offerInbox)
         case .feelings:
             break
         }
