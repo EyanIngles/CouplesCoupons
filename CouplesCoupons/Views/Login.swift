@@ -5,6 +5,7 @@
 //  Created by Eyan Ingles on 28/8/2026.
 //
 
+import AuthenticationServices
 import SwiftUI
 
 struct LoginView: View {
@@ -84,6 +85,16 @@ struct LoginView: View {
                             .buttonStyle(WarmPrimaryButtonStyle())
                             .disabled(authManager.isWorking)
 
+                            SignInWithAppleButton(.signIn) { request in
+                                request.requestedScopes = [.fullName, .email]
+                            } onCompletion: { result in
+                                handleApple(result)
+                            }
+                            .signInWithAppleButtonStyle(.black)
+                            .frame(height: 52)
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .disabled(authManager.isWorking)
+
                             NavigationLink {
                                 RegisterView()
                             } label: {
@@ -122,6 +133,29 @@ struct LoginView: View {
         validationMessage = nil
         Task {
             await authManager.login(email: normalizedEmail, password: password)
+        }
+    }
+
+    private func handleApple(_ result: Result<ASAuthorization, Error>) {
+        switch result {
+        case .failure(let error):
+            validationMessage = error.localizedDescription
+        case .success(let authorization):
+            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let tokenData = credential.identityToken,
+                  let token = String(data: tokenData, encoding: .utf8) else {
+                validationMessage = "Apple Sign In did not return a token."
+                return
+            }
+            var displayName: String?
+            if let name = credential.fullName {
+                let formatted = PersonNameComponentsFormatter().string(from: name).trimmingCharacters(in: .whitespaces)
+                if !formatted.isEmpty { displayName = formatted }
+            }
+            validationMessage = nil
+            Task {
+                await authManager.loginWithApple(identityToken: token, displayName: displayName)
+            }
         }
     }
 }
