@@ -143,6 +143,9 @@ nonisolated enum Changelog {
         ChangelogEntry(version: "0.0.4", notes: [
             "Daily feelings: tell your partner how you are today",
         ]),
+        ChangelogEntry(version: "0.0.5", notes: [
+            "Ask for notifications so your partner’s coupons and feelings can ping you",
+        ]),
     ]
 
     static func notes(after lastSeen: String, upTo current: String) -> [ChangelogEntry] {
