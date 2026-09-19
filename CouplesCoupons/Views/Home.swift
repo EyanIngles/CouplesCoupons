@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject private var notificationRouter: NotificationRouter
+    @State private var navigationPath = NavigationPath()
     
     // MARK: - Colours
     private let pink = Color(red: 0.89, green: 0.27, blue: 0.45)
@@ -35,7 +37,7 @@ struct HomeView: View {
     ]
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 cream.ignoresSafeArea()
                 
@@ -278,6 +280,32 @@ struct HomeView: View {
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(for: NotificationDestination.self) { destination in
+                switch destination {
+                case .couponBank:
+                    CouponList()
+                case .offerInbox:
+                    OfferInboxView()
+                case .feelings:
+                    EmptyView()
+                }
+            }
+        }
+        .onAppear(perform: openPendingDestination)
+        .onChange(of: notificationRouter.pendingDestination) {
+            openPendingDestination()
+        }
+    }
+
+    private func openPendingDestination() {
+        guard let destination = notificationRouter.takePendingDestination() else { return }
+
+        navigationPath = NavigationPath()
+        switch destination {
+        case .couponBank, .offerInbox:
+            navigationPath.append(destination)
+        case .feelings:
+            break
         }
     }
     
@@ -349,4 +377,5 @@ struct NewsItem: Identifiable {
 #Preview {
     HomeView()
         .environmentObject(AuthManager())
+        .environmentObject(NotificationRouter.shared)
 }
